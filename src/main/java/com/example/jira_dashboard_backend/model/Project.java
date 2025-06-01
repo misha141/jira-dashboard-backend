@@ -14,10 +14,6 @@ public class Project {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -32,5 +28,9 @@ public class Project {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
