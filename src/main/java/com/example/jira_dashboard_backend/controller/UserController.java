@@ -2,18 +2,24 @@ package com.example.jira_dashboard_backend.controller;
 
 import com.example.jira_dashboard_backend.model.User;
 import com.example.jira_dashboard_backend.repository.UserRepository;
+import com.example.jira_dashboard_backend.util.JwtUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserRepository userRepository){
+    public UserController(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
@@ -22,12 +28,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User loginUser){
+    public ResponseEntity<?> login(@RequestBody User loginUser){
+        System.out.println("🔐 Login endpoint hit");  // <--- add this line
         User user = userRepository.findByEmail(loginUser.getEmail());
         if(user != null && user.getPassword().equals(loginUser.getPassword())){
-            return "Login Successful!";
+            String token = jwtUtil.generateToken(user.getEmail());
+            return ResponseEntity.ok().body(Map.of("token",token));
         }
-        return "Invalid Credentials!";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
     }
 
     @GetMapping
