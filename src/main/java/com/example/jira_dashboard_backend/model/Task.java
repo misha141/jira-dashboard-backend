@@ -11,6 +11,8 @@ public class Task {
     private String description;
     private String status;
     private String projectId;
+    private String createdBy;
+
 
     public Task(){
 
@@ -21,6 +23,14 @@ public class Task {
         this.description = description;
         this.status = status;
         this.projectId = projectId;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public String getId(){

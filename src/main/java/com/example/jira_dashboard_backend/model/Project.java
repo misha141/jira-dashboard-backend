@@ -9,9 +9,19 @@ public class Project {
     private String id;
     private String name;
     private String description;
+    private String createdBy;
+
 
     public String getId() {
         return id;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public String getName() {

@@ -2,6 +2,8 @@ package com.example.jira_dashboard_backend.controller;
 
 import com.example.jira_dashboard_backend.model.Project;
 import com.example.jira_dashboard_backend.repository.ProjectRepository;
+import com.example.jira_dashboard_backend.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,14 +13,18 @@ import java.util.Optional;
 @RequestMapping("/api/projects")
 public class ProjectController {
     private final ProjectRepository projectRepository;
+    private final JwtUtil jwtUtil;
 
-    public ProjectController(ProjectRepository projectRepository){
+    public ProjectController(ProjectRepository projectRepository, JwtUtil jwtUtil){
         this.projectRepository = projectRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping
-    public List<Project> getAllProjects(){
-        return projectRepository.findAll();
+    public List<Project> getAllProjects(HttpServletRequest request){
+        String token = request.getHeader("Authorization").substring(7);
+        String userEmail = jwtUtil.extractEmail(token);
+        return projectRepository.findByCreatedBy(userEmail);
     }
 
     @GetMapping("/{id}")
@@ -27,7 +33,10 @@ public class ProjectController {
     }
 
     @PostMapping
-    public Project createproject(@RequestBody Project project){
+    public Project createproject(@RequestBody Project project, HttpServletRequest request){
+        String token = request.getHeader("Authorization").substring(7);
+        String userEmail = jwtUtil.extractEmail(token);
+        project.setCreatedBy(userEmail);
         return projectRepository.save(project);
     }
 

@@ -2,6 +2,9 @@ package com.example.jira_dashboard_backend.controller;
 
 import com.example.jira_dashboard_backend.model.Task;
 import com.example.jira_dashboard_backend.repository.TaskRepository;
+import com.example.jira_dashboard_backend.util.JwtUtil;
+import io.jsonwebtoken.Jwt;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,11 +15,18 @@ import java.util.Optional;
 public class TaskController {
 
     private final TaskRepository taskRepository;
+    private final JwtUtil jwtUtil;
 
-    public TaskController(TaskRepository taskRepository){
+    public TaskController(TaskRepository taskRepository, JwtUtil jwtUtil){
         this.taskRepository = taskRepository;
+        this.jwtUtil = jwtUtil;
     }
-
+    @GetMapping
+    public List<Task> getAllTasks(HttpServletRequest request){
+        String token = request.getHeader("Authorization").substring(7);
+        String userEmail = jwtUtil.extractEmail(token);
+        return taskRepository.findByCreatedBy(userEmail);
+    }
     @GetMapping("/project/{projectId}")
     public List<Task> getTaskByProject(@PathVariable String projectId){
         return taskRepository.findByProjectId(projectId);
@@ -28,7 +38,10 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task){
+    public Task createTask(@RequestBody Task task, HttpServletRequest request){
+        String token = request.getHeader("Authorization").substring(7);
+        String userEmail = jwtUtil.extractEmail(token);
+        task.setCreatedBy(userEmail);
         return taskRepository.save(task);
     }
 
