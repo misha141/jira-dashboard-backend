@@ -5,6 +5,8 @@ import com.example.jira_dashboard_backend.repository.TaskRepository;
 import com.example.jira_dashboard_backend.util.JwtUtil;
 import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,24 +48,49 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public Task updateTask(@PathVariable String id, @RequestBody Task updateTask){
+    public ResponseEntity<?> updateTask(@PathVariable String id, @RequestBody Task updateTask, HttpServletRequest request){
         Optional<Task> existingTaskOpt = taskRepository.findById(id);
 
         if(existingTaskOpt.isPresent()){
             Task existingTask = existingTaskOpt.get();
-            existingTask.setTitle(updateTask.getTitle());
-            existingTask.setDescription(updateTask.getDescription());
-            existingTask.setStatus(updateTask.getStatus());
-            return taskRepository.save(existingTask);
+            String userEmail = jwtUtil.extractEmail(request.getHeader("Authorization").substring(7));
+
+            if(existingTask.getCreatedBy().equals(userEmail)){
+                existingTask.setTitle(updateTask.getTitle());
+                existingTask.setDescription(updateTask.getDescription());
+                existingTask.setStatus(updateTask.getStatus());
+                return ResponseEntity.ok(taskRepository.save(existingTask));
+            }else{
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this task.");
+            }
+
         }else{
             updateTask.setId(id);
-            return taskRepository.save(updateTask);
+            updateTask.setCreatedBy(jwtUtil.extractEmail(request.getHeader("Authorization").substring(7)));
+            return ResponseEntity.status(HttpStatus.CREATED).body(taskRepository.save(updateTask));
         }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable String id){
-        taskRepository.deleteById(id);
+    public ResponseEntity<?> deleteTask(@PathVariable String id, HttpServletRequest request){
+        Optional<Task> taskOpt = taskRepository.findById(id);
+
+        if(taskOpt.isPresent()){
+            Task task = taskOpt.get();
+            String userEmail = jwtUtil.extractEmail(request.getHeader("Authorization").substring(7));
+
+            if(task.getCreatedBy().equals(userEmail)){
+                taskRepository.deleteById(id);
+                return ResponseEntity.ok("Task deleted successfully.");
+
+            }else{
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to delete this task.");
+            }
+
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found.");
+        }
+
     }
 
 }
