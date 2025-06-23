@@ -29,7 +29,6 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginUser){
-        System.out.println("🔐 Login endpoint hit");  // <--- add this line
         User user = userRepository.findByEmail(loginUser.getEmail());
         if(user != null && user.getPassword().equals(loginUser.getPassword())){
             String token = jwtUtil.generateToken(user.getEmail());
