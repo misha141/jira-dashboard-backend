@@ -8,27 +8,40 @@ public class User {
     @Id
     private String id;
 
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
     private String dateOfBirth;
     private String username;
     private String email;
     private String password;
 
-    public String getFirstname() {
-        return firstname;
+    public User(){
+
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public User(String firstName, String lastName, String dateOfBirth, String username, String email, String password){
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.dateOfBirth = dateOfBirth;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getDateOfBirth() {
