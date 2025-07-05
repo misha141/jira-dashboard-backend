@@ -3,6 +3,8 @@ package com.example.jira_dashboard_backend.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Document(collection = "projects")
 public class Project {
     @Id
@@ -10,7 +12,15 @@ public class Project {
     private String name;
     private String description;
     private String createdBy;
+    private Date createdAt;
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public String getId() {
         return id;

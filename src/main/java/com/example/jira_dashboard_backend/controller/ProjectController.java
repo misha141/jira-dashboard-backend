@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,7 @@ public class ProjectController {
         String token = request.getHeader("Authorization").substring(7);
         String userEmail = jwtUtil.extractEmail(token);
         project.setCreatedBy(userEmail);
+        project.setCreatedAt(new Date());
         return projectRepository.save(project);
     }
 
