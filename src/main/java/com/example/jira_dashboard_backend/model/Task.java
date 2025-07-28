@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Task {
     @Id
     private String id;
+    private long taskId;
+
     private String title;
     private String description;
     private String status;
@@ -23,6 +25,14 @@ public class Task {
         this.description = description;
         this.status = status;
         this.projectId = projectId;
+    }
+
+    public long getTaskId(){
+        return taskId;
+    }
+
+    public void setTaskId(long taskId){
+        this.taskId = taskId;
     }
 
     public String getCreatedBy() {

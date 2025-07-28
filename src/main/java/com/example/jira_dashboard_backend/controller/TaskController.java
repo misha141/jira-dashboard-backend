@@ -1,5 +1,6 @@
 package com.example.jira_dashboard_backend.controller;
 
+import com.example.jira_dashboard_backend.Service.SequenceGeneratorService;
 import com.example.jira_dashboard_backend.model.Task;
 import com.example.jira_dashboard_backend.repository.TaskRepository;
 import com.example.jira_dashboard_backend.util.JwtUtil;
@@ -17,10 +18,12 @@ import java.util.Optional;
 public class TaskController {
 
     private final TaskRepository taskRepository;
+    private final SequenceGeneratorService sequenceGeneratorService;
     private final JwtUtil jwtUtil;
 
-    public TaskController(TaskRepository taskRepository, JwtUtil jwtUtil){
+    public TaskController(TaskRepository taskRepository, SequenceGeneratorService sequenceGeneratorService, JwtUtil jwtUtil){
         this.taskRepository = taskRepository;
+        this.sequenceGeneratorService = sequenceGeneratorService;
         this.jwtUtil = jwtUtil;
     }
     @GetMapping
@@ -44,6 +47,7 @@ public class TaskController {
         String token = request.getHeader("Authorization").substring(7);
         String userEmail = jwtUtil.extractEmail(token);
         task.setCreatedBy(userEmail);
+        task.setTaskId((sequenceGeneratorService.generateSequence("tasks_sequence")));
         return taskRepository.save(task);
     }
 
