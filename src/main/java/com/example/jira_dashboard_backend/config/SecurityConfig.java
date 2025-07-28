@@ -31,6 +31,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/register",
                                 "/api/users/login",
+                                "/api/github/webhook",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
